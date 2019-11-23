@@ -60,12 +60,33 @@ delete
 从HTTP规范来看，删除操作是幂等的。如果删除资源，它将被删除。
 然而，关于删除等幂有一个警告。第二次对资源调用DELETE通常会返回404（未找到），因为它已被删除，因此不再可找到。
 
-|  HTTP Verb |  /customers |  /customers/{id} |   |   |
-|---|---|---|---|---|
-|   |   |   |   |   |
-|   |   |   |   |   |
-|   |   |   |   |   |
+
+HTTP Verb
+/customers
+/customers/{id}
 
 
+GET
+200 (OK), list of customers. Use pagination, sorting and filtering to navigate big lists.
+200 (OK), single customer. 404 (Not Found), if ID not found or invalid.
+
+
+PUT
+404 (Not Found), unless you want to update/replace every resource in the entire collection.
+200 (OK) or 204 (No Content). 404 (Not Found), if ID not found or invalid.
+
+POST 
+POST 201 (Created), 'Location' header with link to 404 (Not Found). /customers/{id} containing new ID.
+404 (Not Found).
+
+DELETE
+404 (Not Found), unless you want to delete the whole collection—not often desirable.
+200 (OK). 404 (Not Found), if ID not found or invalid.
+
+资源命名
+
+过滤和分页
+
+接口版本升级
 
 
