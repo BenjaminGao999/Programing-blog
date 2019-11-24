@@ -43,12 +43,7 @@ client      server
         <-     返回
 重试
 
-在业务中做双重检测
-根据user_id查找记录， 如果已存在则修改，否则创建。
-step1 查找
-step2 插入或修改
 
-拆分成两步如何解决并发问题？
 
 reqNo+source 
 
@@ -60,7 +55,16 @@ client      server
  reqNo+source    ->  remove req true 
  
 reqNo+source       -> remove req false 
-                  <-  提示
+                  <-  提示“重复提交”
+
+
+在业务中做双重检测
+根据user_id查找记录， 如果已存在则修改，否则创建。
+step1 查找
+step2 插入或修改
+
+拆分成两步如何解决并发问题？
+
 
 
  
