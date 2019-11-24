@@ -187,6 +187,38 @@ appendfsync否：永远不要fsync，把你的数据放在操作系统的手里�
 
 # 当RAM空间占满时，清理出可用空间的策略
 
+下面引用Redis常见问题解答中的一句话：“如果Redis内存不足会发生什么？”章节：
+
+... [您]可以使用配置文件中的“maxmemory”选项限制Redis可以使用的内存。如果达到此限制，Redis将开始回复写入命令的错误（但将继续接受只读命令），或者在使用Redis进行缓存的情况下，可以将其配置为在达到最大内存限制时收回密钥。
+
+Redis Cloud的固定大小计划将其maxmemory设置为计划的大小。您可以从帐户的控制台轻松配置实例的逐出策略（称为maxmemory策略），并将其设置为任何标准的Redis行为，而不会中断服务。以下列表详细列出了Redis的逐出策略：
+
+allkeys-lru: the service evicts the least recently used keys out of all keys
+allkeys-lfu: the service evicts the least frequently used keys out of all keys
+allkeys-random: the service randomly evicts keys out of all keys
+volatile-lru: the service evicts the least recently used keys out of all keys with an "expire" field set
+volatile-ttl: the service evicts the shortest time to live keys (out of all keys with an "expire" field set)
+volatile-lfu: the service evicts the least frequently used keys out of all keys with an "expire" field set
+volatile-random: the service randomly evicts keys with an "expire" field set
+no-eviction: the service will not evict any keys and no writes will be possible until more memory is freed
+
+all keys lru：服务从所有密钥中逐出最近使用最少的密钥
+
+all keys lfu：服务从所有密钥中逐出最不常用的密钥
+
+all keys random：服务从所有密钥中随机取出密钥
+
+volatile lru：该服务从所有设置了“expire”字段的密钥中逐出最近使用最少的密钥
+volatile lfu：服务从所有设置了“expire”字段的键中逐出最不常用的键
+
+volatile random：服务随机收回设置了“expire”字段的密钥
+
+volatile ttl：服务逐出生存时间最短的密钥（在所有设置了“expire”字段的密钥中）
+
+no eviction：服务不会逐出任何密钥，并且在释放更多内存之前无法进行写入
+
+
+
 
 # 高可用
 
