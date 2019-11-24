@@ -59,7 +59,7 @@ reqNo+source       -> remove req false
 
 
 在业务中做双重检测
-根据user_id查找记录， 如果已存在则修改，否则创建。
+根据user_id查找记录，或者根据id查找记录 如果已存在则修改，否则创建。
 step1 查找
 step2 插入或修改
 
