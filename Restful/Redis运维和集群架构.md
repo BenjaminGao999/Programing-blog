@@ -221,17 +221,102 @@ no eviction：服务不会逐出任何密钥，并且在释放更多内存之前
 
 
 # 高可用
+failover故障转移 
+主机下线，从机升级为主机。
+
+Redis Sentinel 
+https://github.com/antirez/redis-doc/blob/master/topics/sentinel.md
+
+
+Redis Sentinel为Redis提供了高可用性。实际上，这意味着使用Sentinel可以创建一个Redis部署，在没有人为干预的情况下抵抗某些类型的失败。
+
+Redis Sentinel还提供其他辅助任务，如监视、通知，并充当客户端的配置提供程序(服务发现功能)。
+
+
+监测。Sentinel经常检查主实例和副本实例是否按预期工作。
+
+通知。Sentinel可以通过API通知系统管理员或其他计算机程序，其中一个被监视的Redis实例有问题。
+
+自动故障转移。如果主服务器没有按预期工作，Sentinel可以启动一个故障转移过程，其中一个副本被提升为主服务器，其他附加副本被重新配置为使用新的主服务器，并且使用Redis服务器的应用程序会被告知连接时要使用的新地址。
+
+配置提供程序。（服务发现功能）Sentinel充当客户端服务发现的授权源：客户端连接到Sentinel以请求负责给定服务的当前Redis主机的地址。如果发生故障转移，Sentinels将报告新地址。
+
+
+Redis Sentinel是一个分布式系统：
+
+
+
+Sentinel本身被设计成在一个配置中运行，其中有多个Sentinel进程协同工作。多个哨兵进程协作的优点如下：
+
+
+
+当多个哨兵同意给定的主服务器不再可用时，执行故障检测。这降低了误报的可能性。
+
+即使不是所有的Sentinel进程都在工作，Sentinel也能工作，从而使系统能够抵抗故障。毕竟，拥有一个本身就是单点故障的故障转移系统是没有乐趣的。
+
+Sentinel、Redis实例（主机和副本）以及连接Sentinel和Redis的客户端的总和，也是一个具有特定属性的大型分布式系统。在本文档中，概念将逐步引入，从理解Sentinel的基本属性所需的基本信息，到更复杂的信息（可选信息），以了解Sentinel是如何工作的。
+
+
 
 # 可扩展
 
+网络分裂（网络分区）
+ 一个大集群被切割成了多个小集群， 并且彼此无感知。
+ 
+ http://www.redis.cn/documentation.html
+ 
+ 
+ 
 
-# 单机Redis运行模式，为什么单线程执行效率确很高
+# 单机Redis运行模式，为什么单线程执行效率却很高
 
 
 
 
+# Redis乐观锁
+watch 
+
+multi 
+exec
 
 
+ @SuppressWarnings("unchecked")
+    public Set<String> autocompleteOnPrefix(Jedis conn, String guild, String prefix) {
+        String[] range = findPrefixRange(prefix);
+        String start = range[0];
+        String end = range[1];
+        String identifier = UUID.randomUUID().toString();
+        start += identifier;
+        end += identifier;
+        String zsetName = "members:" + guild;
 
+        conn.zadd(zsetName, 0, start);
+        conn.zadd(zsetName, 0, end);
 
+        Set<String> items = null;
+        while (true) {
+            conn.watch(zsetName);
+            int sindex = conn.zrank(zsetName, start).intValue();
+            int eindex = conn.zrank(zsetName, end).intValue();
+            int erange = Math.min(sindex + 9, eindex - 2);
+
+            Transaction trans = conn.multi();
+            trans.zrem(zsetName, start);
+            trans.zrem(zsetName, end);
+            trans.zrange(zsetName, sindex, erange);
+            List<Object> results = trans.exec();
+            if (results != null) {
+                items = (Set<String>) results.get(results.size() - 1);
+                break;
+            }
+        }
+
+        for (Iterator<String> iterator = items.iterator(); iterator.hasNext(); ) {
+            if (iterator.next().indexOf('{') != -1) {
+                iterator.remove();
+            }
+        }
+        return items;
+    }
+    
 
