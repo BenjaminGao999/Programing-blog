@@ -271,6 +271,9 @@ Sentinel、Redis实例（主机和副本）以及连接Sentinel和Redis的客户
 # 单机Redis运行模式，单线程和多路复用技术
 https://zhuanlan.zhihu.com/p/52600663
 
+https://my.oschina.net/andylucc/blog/678828
+
+
 Redis监听客户端的连接， 对每一个连接建立套接字I/O，这包括调用read（）和write（）系统调用，这意味着从用户端到内核端。
 执行commands或者lua script
 
