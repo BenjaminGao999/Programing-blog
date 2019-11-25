@@ -273,50 +273,33 @@ Sentinel、Redis实例（主机和副本）以及连接Sentinel和Redis的客户
 
 
 
-# Redis乐观锁
-watch 
+# Redis乐观锁和Transactions
+http://www.redis.cn/topics/transactions.html
 
-multi 
-exec
+事务可以一次执行多个命令， 并且带有以下两个重要的保证：
+
+事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。
+
+事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行。
 
 
- @SuppressWarnings("unchecked")
-    public Set<String> autocompleteOnPrefix(Jedis conn, String guild, String prefix) {
-        String[] range = findPrefixRange(prefix);
-        String start = range[0];
-        String end = range[1];
-        String identifier = UUID.randomUUID().toString();
-        start += identifier;
-        end += identifier;
-        String zsetName = "members:" + guild;
+WATCH 使得 EXEC 命令需要有条件地执行： 事务只能在所有被监视键都没有被修改的前提下执行， 如果这个前提不能满足的话，事务就不会被执行。
 
-        conn.zadd(zsetName, 0, start);
-        conn.zadd(zsetName, 0, end);
+WATCH 命令可以被调用多次。 对键的监视从 WATCH 执行之后开始生效， 直到调用 EXEC 为止。
 
-        Set<String> items = null;
-        while (true) {
-            conn.watch(zsetName);
-            int sindex = conn.zrank(zsetName, start).intValue();
-            int eindex = conn.zrank(zsetName, end).intValue();
-            int erange = Math.min(sindex + 9, eindex - 2);
+用户还可以在单个 WATCH 命令中监视任意多个键。
 
-            Transaction trans = conn.multi();
-            trans.zrem(zsetName, start);
-            trans.zrem(zsetName, end);
-            trans.zrange(zsetName, sindex, erange);
-            List<Object> results = trans.exec();
-            if (results != null) {
-                items = (Set<String>) results.get(results.size() - 1);
-                break;
-            }
-        }
+当 EXEC 被调用时， 不管事务是否成功执行， 对所有键的监视都会被取消。
 
-        for (Iterator<String> iterator = items.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().indexOf('{') != -1) {
-                iterator.remove();
-            }
-        }
-        return items;
-    }
+另外， 当客户端断开连接时， 该客户端对键的监视也会被取消。
+
+使用无参数的 UNWATCH 命令可以手动取消对所有键的监视。 对于一些需要改动多个键的事务， 有时候程序需要同时对多个键进行加锁， 然后检查这些键的当前值是否符合程序的要求。 当值达不到要求时， 就可以使用 UNWATCH 命令来取消目前对键的监视， 中途放弃这个事务， 并等待事务的下次尝试。
+
+
+
+
+
+
+
     
 
