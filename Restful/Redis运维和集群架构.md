@@ -268,16 +268,15 @@ Sentinel、Redis实例（主机和副本）以及连接Sentinel和Redis的客户
  
  
 
-# 单机Redis运行模式，单线程用来执行命令的
-
-
+# 单机Redis运行模式，单线程和多路复用技术
+https://zhuanlan.zhihu.com/p/52600663
 
 Redis监听客户端的连接， 对每一个连接建立套接字I/O，这包括调用read（）和write（）系统调用，这意味着从用户端到内核端。
 执行commands或者lua script
-监听客户端连接，并为每个客户端连接都用的一个线程， 这个是网络连接和网络io;
+
+多路-指的是多个socket连接，复用-指的是复用一个线程。多路复用主要有三种技术：select，poll，epoll。epoll是最新的也是目前最好的多路复用技术。
 
 
-单线程是用来执行命令的， 这个是Redis内部执行命令的线程， 和网络io没关系。所以所Redis中所有的命令都是串行执行的。
 
 
 Redis客户端执行一条命令分为如下四个过程：
