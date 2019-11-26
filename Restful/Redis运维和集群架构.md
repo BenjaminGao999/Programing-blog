@@ -300,6 +300,7 @@ Redis客户端执行一条命令分为如下四个过程：
 
 
 # Redis乐观锁和Transactions
+
 http://www.redis.cn/topics/transactions.html
 
 事务可以一次执行多个命令， 并且带有以下两个重要的保证：
@@ -334,6 +335,19 @@ WATCH 命令可以被调用多次。 对键的监视从 WATCH 执行之后开始
 ·原生批量命令是原子的，Pipeline是非原子的。
 ·原生批量命令是一个命令对应多个key，Pipeline支持多个命令。
 ·原生批量命令是Redis服务端支持实现的，而Pipeline需要服务端和客户 端的共同实现。
+
+
+# Redis实现分布式锁
+
+单节点Redis分布式锁
+
+
+Redis集群分布式锁 Redlock  
+
+
+
+
+
 
 
     
