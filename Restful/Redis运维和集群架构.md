@@ -194,12 +194,25 @@ appendfsync否：永远不要fsync，把你的数据放在操作系统的手里�
 Redis Cloud的固定大小计划将其maxmemory设置为计划的大小。您可以从帐户的控制台轻松配置实例的逐出策略（称为maxmemory策略），并将其设置为任何标准的Redis行为，而不会中断服务。以下列表详细列出了Redis的逐出策略：
 
 allkeys-lru: the service evicts the least recently used keys out of all keys
+
 allkeys-lfu: the service evicts the least frequently used keys out of all keys
+
+
 allkeys-random: the service randomly evicts keys out of all keys
+
+
 volatile-lru: the service evicts the least recently used keys out of all keys with an "expire" field set
+
+
 volatile-ttl: the service evicts the shortest time to live keys (out of all keys with an "expire" field set)
+
+
 volatile-lfu: the service evicts the least frequently used keys out of all keys with an "expire" field set
+
+
 volatile-random: the service randomly evicts keys with an "expire" field set
+
+
 no-eviction: the service will not evict any keys and no writes will be possible until more memory is freed
 
 all keys lru：服务从所有密钥中逐出最近使用最少的密钥
@@ -209,6 +222,8 @@ all keys lfu：服务从所有密钥中逐出最不常用的密钥
 all keys random：服务从所有密钥中随机取出密钥
 
 volatile lru：该服务从所有设置了“expire”字段的密钥中逐出最近使用最少的密钥
+
+
 volatile lfu：服务从所有设置了“expire”字段的键中逐出最不常用的键
 
 volatile random：服务随机收回设置了“expire”字段的密钥
